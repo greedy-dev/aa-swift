@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		75213F2D2B7CB52B0087A62C /* Alchemy in Frameworks */ = {isa = PBXBuildFile; productRef = 75213F2C2B7CB52B0087A62C /* Alchemy */; };
+		75213F2F2B7CB52B0087A62C /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 75213F2E2B7CB52B0087A62C /* Core */; };
 		753480682B690915000B4C73 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753480672B690915000B4C73 /* AppDelegate.swift */; };
 		7534806A2B690915000B4C73 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753480692B690915000B4C73 /* SceneDelegate.swift */; };
 		7534806C2B690915000B4C73 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7534806B2B690915000B4C73 /* ViewController.swift */; };
@@ -38,6 +40,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75213F2D2B7CB52B0087A62C /* Alchemy in Frameworks */,
+				75213F2F2B7CB52B0087A62C /* Core in Frameworks */,
 				75C1D7862B6925B000FD43D3 /* Web3Auth in Frameworks */,
 				754966872B6D37DE00D1959A /* web3.swift in Frameworks */,
 			);
@@ -107,6 +111,8 @@
 			packageProductDependencies = (
 				75C1D7852B6925B000FD43D3 /* Web3Auth */,
 				754966862B6D37DE00D1959A /* web3.swift */,
+				75213F2C2B7CB52B0087A62C /* Alchemy */,
+				75213F2E2B7CB52B0087A62C /* Core */,
 			);
 			productName = Example;
 			productReference = 753480652B690915000B4C73 /* Example.app */;
@@ -139,6 +145,7 @@
 			packageReferences = (
 				75FE7C102B66A64A0072163C /* XCRemoteSwiftPackageReference "web3auth-swift-sdk" */,
 				754966832B6D2F0900D1959A /* XCRemoteSwiftPackageReference "web3" */,
+				75213F2B2B7CB52B0087A62C /* XCRemoteSwiftPackageReference "aa-swift" */,
 			);
 			productRefGroup = 11CA2C5F29F101D90083AFCF /* Products */;
 			projectDirPath = "";
@@ -401,6 +408,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		75213F2B2B7CB52B0087A62C /* XCRemoteSwiftPackageReference "aa-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Syn-McJ/aa-swift.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		754966832B6D2F0900D1959A /* XCRemoteSwiftPackageReference "web3" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/argentlabs/web3.swift";
@@ -420,6 +435,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		75213F2C2B7CB52B0087A62C /* Alchemy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 75213F2B2B7CB52B0087A62C /* XCRemoteSwiftPackageReference "aa-swift" */;
+			productName = Alchemy;
+		};
+		75213F2E2B7CB52B0087A62C /* Core */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 75213F2B2B7CB52B0087A62C /* XCRemoteSwiftPackageReference "aa-swift" */;
+			productName = Core;
+		};
 		754966862B6D37DE00D1959A /* web3.swift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 754966832B6D2F0900D1959A /* XCRemoteSwiftPackageReference "web3" */;

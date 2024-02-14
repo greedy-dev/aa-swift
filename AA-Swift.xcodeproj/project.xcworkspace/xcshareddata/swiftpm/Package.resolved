@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "aa-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Syn-McJ/aa-swift.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "f43c9f70b48ac93f01ae641ba79bc955f8e0735d"
+      }
+    },
+    {
       "identity" : "bigint",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/attaswift/BigInt.git",
