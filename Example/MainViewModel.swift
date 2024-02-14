@@ -36,8 +36,8 @@ class MainViewModel {
     private let chain = Chain.Sepolia
     private let jiffyScanBaseUrl = "https://jiffyscan.xyz/userOpHash/"
     private let alchemyTokenSepoliaAddress = "0x6F3c1baeF15F2Ac6eD52ef897f60cac0B10d90C3"
-    private let alchemyApiKey = ...
-    private let alchemyGasPolicyId = ...
+    private let alchemyApiKey = ""
+    private let alchemyGasPolicyId = ""
     
     private var web3AuthClientId = "BHr_dKcxC0ecKn_2dZQmQeNdjPgWykMkcodEHkVvPMo71qzOV6SgtoN8KCvFdLN7bf34JOm89vWQMLFmSfIo84A"
     private let auth0ClientId = "294QRkchfq2YaXUbPri7D6PH7xzHgQMT"

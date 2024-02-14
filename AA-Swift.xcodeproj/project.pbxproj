@@ -3,12 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7502FA0C2B7B83610054762A /* Alchemy in Frameworks */ = {isa = PBXBuildFile; productRef = 7502FA0B2B7B83610054762A /* Alchemy */; };
-		7502FA0E2B7B83610054762A /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 7502FA0D2B7B83610054762A /* Core */; };
 		753480682B690915000B4C73 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753480672B690915000B4C73 /* AppDelegate.swift */; };
 		7534806A2B690915000B4C73 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753480692B690915000B4C73 /* SceneDelegate.swift */; };
 		7534806C2B690915000B4C73 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7534806B2B690915000B4C73 /* ViewController.swift */; };
@@ -21,6 +19,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7512D7B02B7CB475008CD0A8 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		7512D7B12B7CB475008CD0A8 /* Sources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Sources; sourceTree = "<group>"; };
+		7512D7B22B7CB475008CD0A8 /* Tests */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Tests; sourceTree = "<group>"; };
 		753480652B690915000B4C73 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		753480672B690915000B4C73 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		753480692B690915000B4C73 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -29,7 +30,6 @@
 		753480702B690916000B4C73 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		753480732B690916000B4C73 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		753480752B690916000B4C73 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		754921062B3BC77000EF7A27 /* AASwift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = AASwift; sourceTree = "<group>"; };
 		75C1D7832B69256D00FD43D3 /* MainViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -38,10 +38,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7502FA0C2B7B83610054762A /* Alchemy in Frameworks */,
 				75C1D7862B6925B000FD43D3 /* Web3Auth in Frameworks */,
 				754966872B6D37DE00D1959A /* web3.swift in Frameworks */,
-				7502FA0E2B7B83610054762A /* Core in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -51,7 +49,9 @@
 		11CA2C5529F101D90083AFCF = {
 			isa = PBXGroup;
 			children = (
-				754921062B3BC77000EF7A27 /* AASwift */,
+				7512D7B02B7CB475008CD0A8 /* Package.swift */,
+				7512D7B12B7CB475008CD0A8 /* Sources */,
+				7512D7B22B7CB475008CD0A8 /* Tests */,
 				753480662B690915000B4C73 /* Example */,
 				11CA2C5F29F101D90083AFCF /* Products */,
 				75A2FBD02B5BFE9F009EDF9E /* Frameworks */,
@@ -107,8 +107,6 @@
 			packageProductDependencies = (
 				75C1D7852B6925B000FD43D3 /* Web3Auth */,
 				754966862B6D37DE00D1959A /* web3.swift */,
-				7502FA0B2B7B83610054762A /* Alchemy */,
-				7502FA0D2B7B83610054762A /* Core */,
 			);
 			productName = Example;
 			productReference = 753480652B690915000B4C73 /* Example.app */;
@@ -141,7 +139,6 @@
 			packageReferences = (
 				75FE7C102B66A64A0072163C /* XCRemoteSwiftPackageReference "web3auth-swift-sdk" */,
 				754966832B6D2F0900D1959A /* XCRemoteSwiftPackageReference "web3" */,
-				7502FA0A2B7B83610054762A /* XCLocalSwiftPackageReference "AASwift" */,
 			);
 			productRefGroup = 11CA2C5F29F101D90083AFCF /* Products */;
 			projectDirPath = "";
@@ -403,13 +400,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		7502FA0A2B7B83610054762A /* XCLocalSwiftPackageReference "AASwift" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = AASwift;
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCRemoteSwiftPackageReference section */
 		754966832B6D2F0900D1959A /* XCRemoteSwiftPackageReference "web3" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -430,14 +420,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		7502FA0B2B7B83610054762A /* Alchemy */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Alchemy;
-		};
-		7502FA0D2B7B83610054762A /* Core */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Core;
-		};
 		754966862B6D37DE00D1959A /* web3.swift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 754966832B6D2F0900D1959A /* XCRemoteSwiftPackageReference "web3" */;
