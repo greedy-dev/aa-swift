@@ -1,0 +1,22 @@
+import Foundation
+
+/**
+ * A signer that can sign messages and typed data.
+ *
+ * @template Inner - the generic type of the inner client that the signer wraps to provide functionality such as signing, etc.
+ *
+ * @var signerType - the type of the signer (e.g. local, hardware, etc.)
+ * @var inner - the inner client of @type {Inner}
+ *
+ * @method getAddress - get the address of the signer
+ * @method signMessage - sign a message
+ */
+public protocol SmartAccountSigner {
+    // The type of the signer (e.g., local, hardware, etc.)
+    var signerType: String { get }
+    
+    // Get the address of the signer
+    func getAddress() async -> String
+    // Sign a message
+    func signMessage(msg: Data) async throws -> Data
+}
