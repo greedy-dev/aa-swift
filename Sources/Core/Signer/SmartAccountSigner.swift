@@ -1,3 +1,10 @@
+//
+//  Copyright (c) 2024 aa-swift
+//
+//  This file is part of the aa-swift project: https://github.com/syn-mcj/aa-swift,
+//  and is released under the MIT License: https://opensource.org/licenses/MIT
+//
+
 import Foundation
 
 /**
@@ -12,11 +19,11 @@ import Foundation
  * @method signMessage - sign a message
  */
 public protocol SmartAccountSigner {
-    // The type of the signer (e.g., local, hardware, etc.)
+    /// The type of the signer (e.g., local, hardware, etc.)
     var signerType: String { get }
     
-    // Get the address of the signer
+    /// Get the address of the signer
     func getAddress() async -> String
-    // Sign a message
+    /// Sign a message
     func signMessage(msg: Data) async throws -> Data
 }

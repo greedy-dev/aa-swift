@@ -1,15 +1,21 @@
+//
+//  Copyright (c) 2024 aa-swift
+//
+//  This file is part of the aa-swift project: https://github.com/syn-mcj/aa-swift,
+//  and is released under the MIT License: https://opensource.org/licenses/MIT
+//
+
 import web3
 import Foundation
 import BigInt
 
-
 /**
  * Generates a hash for a UserOperation valid from entrypoint version 0.6 onwards
  *
- * @param request - the UserOperation to get the hash for
- * @param entryPointAddress - the entry point address that will be used to execute the UserOperation
- * @param chainId - the chain on which this UserOperation will be executed
- * @returns the hash of the UserOperation
+ * - Parameter request: the UserOperation to get the hash for
+ * - Parameter entryPointAddress: the entry point address that will be used to execute the UserOperation
+ * - Parameter chainId: the chain on which this UserOperation will be executed
+ * - Returns: the hash of the UserOperation
  */
 func getUserOperationHash(
     request: UserOperationStruct,

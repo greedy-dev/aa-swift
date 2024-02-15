@@ -1,3 +1,10 @@
+//
+//  Copyright (c) 2024 aa-swift
+//
+//  This file is part of the aa-swift project: https://github.com/syn-mcj/aa-swift,
+//  and is released under the MIT License: https://opensource.org/licenses/MIT
+//
+
 import web3
 import BigInt
 
@@ -5,9 +12,9 @@ public protocol Erc4337Client: EthereumRPCProtocol {
     /**
      * calls eth_estimateUserOperationGas and  returns the result
      *
-     * @param request - the {@link UserOperationRequest} to estimate gas for
-     * @param entryPoint - the entrypoint address the op will be sent to
-     * @returns the gas estimates for the given response (see: {@link UserOperationEstimateGasResponse})
+     * - Parameter request: the {@link UserOperationRequest} to estimate gas for
+     * - Parameter entryPoint: the entrypoint address the op will be sent to
+     * - Returns: the gas estimates for the given response (see: {@link UserOperationEstimateGasResponse})
      */
     func estimateUserOperationGas(
         request: UserOperationRequest,
@@ -17,9 +24,9 @@ public protocol Erc4337Client: EthereumRPCProtocol {
     /**
      * calls eth_sendUserOperation and returns the hash of the sent UserOperation
      *
-     * @param request - the {@link UserOperationRequest} to send
-     * @param entryPoint - the entrypoint address the op will be sent to
-     * @returns the hash of the sent UserOperation
+     * - Parameter request: the {@link UserOperationRequest} to send
+     * - Parameter entryPoint: the entrypoint address the op will be sent to
+     * - Returns: the hash of the sent UserOperation
      */
     func sendUserOperation(
         request: UserOperationRequest,
@@ -29,8 +36,8 @@ public protocol Erc4337Client: EthereumRPCProtocol {
     /**
      * calls `eth_getUserOperationReceipt` and returns the {@link UserOperationReceipt}
      *
-     * @param hash - the hash of the UserOperation to get the receipt for
-     * @returns - {@link UserOperationResponse}
+     * - Parameter hash: the hash of the UserOperation to get the receipt for
+     * - Returns: {@link UserOperationResponse}
      */
     func getUserOperationReceipt(hash: String) async throws -> UserOperationReceipt
 
@@ -41,12 +48,12 @@ public protocol Erc4337Client: EthereumRPCProtocol {
      *
      * - Docs: https://viem.sh/docs/actions/public/estimateFeesPerGas.html
      *
-     * @param client - Client to use
-     * @param parameters - {@link EstimateFeesPerGasParameters}
-     * @returns An estimate (in wei) for the fees per gas. {@link EstimateFeesPerGasReturnType}
+     * - Parameter client: Client to use
+     * - Parameter parameters: {@link EstimateFeesPerGasParameters}
+     * - Returns: An estimate (in wei) for the fees per gas. {@link EstimateFeesPerGasReturnType}
      */
     func estimateFeesPerGas(chain: Chain) async throws -> FeeValuesEIP1559
     
-    // Returns a fee per gas that is an estimate of how much you can pay as a priority fee, or 'tip', to get a transaction included in the current block.
+    /// Returns a fee per gas that is an estimate of how much you can pay as a priority fee, or 'tip', to get a transaction included in the current block.
     func maxPriorityFeePerGas() async throws -> BigUInt
 }

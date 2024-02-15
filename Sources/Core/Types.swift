@@ -1,13 +1,20 @@
+//
+//  Copyright (c) 2024 aa-swift
+//
+//  This file is part of the aa-swift project: https://github.com/syn-mcj/aa-swift,
+//  and is released under the MIT License: https://opensource.org/licenses/MIT
+//
+
 import Foundation
 import BigInt
 import web3
 
 public struct UserOperationCallData: Equatable  {
-    // the target of the call
+    /// the target of the call
     public let target: EthereumAddress
-    // the data passed to the target
+    /// the data passed to the target
     public let data: Data
-    // the amount of native token to send to the target (default: 0)
+    /// the amount of native token to send to the target (default: 0)
     public let value: BigUInt?
     
     public init(target: EthereumAddress, data: Data, value: BigUInt? = nil) {
@@ -17,56 +24,56 @@ public struct UserOperationCallData: Equatable  {
     }
 }
 
-// Represents the request as it needs to be formatted for RPC requests
+/// Represents the request as it needs to be formatted for RPC requests
 public struct UserOperationRequest: Equatable, Encodable {
-    // The origin of the request
+    /// The origin of the request
     public let sender: String
-    // Nonce of the transaction, returned from the entrypoint for this Address
+    /// Nonce of the transaction, returned from the entrypoint for this Address
     public let nonce: String
-    // The initCode for creating the sender if it does not exist yet, otherwise "0x"
+    /// The initCode for creating the sender if it does not exist yet, otherwise "0x"
     public let initCode: String
-    // The callData passed to the target
+    /// The callData passed to the target
     public let callData: String
-    // Value used by inner account execution
+    /// Value used by inner account execution
     public let callGasLimit: String
-    // Actual gas used by the validation of this UserOperation
+    /// Actual gas used by the validation of this UserOperation
     public let verificationGasLimit: String
-    // Gas overhead of this UserOperation
+    /// Gas overhead of this UserOperation
     public let preVerificationGas: String
-    // Maximum fee per gas (similar to EIP-1559 max_fee_per_gas)
+    /// Maximum fee per gas (similar to EIP-1559 max_fee_per_gas)
     public let maxFeePerGas: String
-    // Maximum priority fee per gas (similar to EIP-1559 max_priority_fee_per_gas)
+    /// Maximum priority fee per gas (similar to EIP-1559 max_priority_fee_per_gas)
     public let maxPriorityFeePerGas: String
-    // Address of paymaster sponsoring the transaction, followed by extra data to send to the paymaster ("0x" for self-sponsored transaction)
+    /// Address of paymaster sponsoring the transaction, followed by extra data to send to the paymaster ("0x" for self-sponsored transaction)
     public let paymasterAndData: String
-    // Data passed into the account along with the nonce during the verification step
+    /// Data passed into the account along with the nonce during the verification step
     public let signature: String
 }
 
-// Based on @account-abstraction/common
-// This is used for building requests
+/// Based on @account-abstraction/common
+/// This is used for building requests
 public struct UserOperationStruct: Equatable {
-    // The origin of the request
+    /// The origin of the request
     public var sender: String
-    // Nonce of the transaction, returned from the entrypoint for this Address
+    /// Nonce of the transaction, returned from the entrypoint for this Address
     public var nonce: BigUInt
-    // The initCode for creating the sender if it does not exist yet, otherwise "0x"
+    /// The initCode for creating the sender if it does not exist yet, otherwise "0x"
     public var initCode: String
-    // The callData passed to the target
+    /// The callData passed to the target
     public var callData: String
-    // Value used by inner account execution
+    /// Value used by inner account execution
     public var callGasLimit: BigUInt?
-    // Actual gas used by the validation of this UserOperation
+    /// Actual gas used by the validation of this UserOperation
     public var verificationGasLimit: BigUInt?
-    // Gas overhead of this UserOperation
+    /// Gas overhead of this UserOperation
     public var preVerificationGas: BigUInt?
-    // Maximum fee per gas (similar to EIP-1559 max_fee_per_gas)
+    /// Maximum fee per gas (similar to EIP-1559 max_fee_per_gas)
     public var maxFeePerGas: BigUInt?
-    // Maximum priority fee per gas (similar to EIP-1559 max_priority_fee_per_gas)
+    /// Maximum priority fee per gas (similar to EIP-1559 max_priority_fee_per_gas)
     public var maxPriorityFeePerGas: BigUInt?
-    // Address of paymaster sponsoring the transaction, followed by extra data to send to the paymaster ("0x" for self-sponsored transaction)
+    /// Address of paymaster sponsoring the transaction, followed by extra data to send to the paymaster ("0x" for self-sponsored transaction)
     public var paymasterAndData: String
-    // Data passed into the account along with the nonce during the verification step
+    /// Data passed into the account along with the nonce during the verification step
     public var signature: Data
     
     public init(sender: String, nonce: BigUInt, initCode: String, callData: String, callGasLimit: BigUInt? = nil, verificationGasLimit: BigUInt? = nil, preVerificationGas: BigUInt? = nil, maxFeePerGas: BigUInt? = nil, maxPriorityFeePerGas: BigUInt? = nil, paymasterAndData: String, signature: Data) {
@@ -98,25 +105,25 @@ public struct UserOperationReceipt: Equatable, Codable {
         case receipt
     }
     
-    // The request hash of the UserOperation.
+    /// The request hash of the UserOperation.
     let userOpHash: String
-    // The entry point address used for the UserOperation.
+    /// The entry point address used for the UserOperation.
     let entryPoint: String
-    // The account initiating the UserOperation.
+    /// The account initiating the UserOperation.
     let sender: String
-    // The nonce used in the UserOperation.
+    /// The nonce used in the UserOperation.
     let nonce: String
-    // The paymaster used for this UserOperation (or empty).
+    /// The paymaster used for this UserOperation (or empty).
     let paymaster: String
-    // The actual amount paid (by account or paymaster) for this UserOperation.
+    /// The actual amount paid (by account or paymaster) for this UserOperation.
     let actualGasCost: String
-    // Indicates whether the execution completed without reverting.
+    /// Indicates whether the execution completed without reverting.
     let actualGasUsed: String
-    // Indicates whether the execution completed without reverting.
+    /// Indicates whether the execution completed without reverting.
     let success: Bool
-    // In case of revert, this is the revert reason.
+    /// In case of revert, this is the revert reason.
     let reason: String
-    // The TransactionReceipt object for the entire bundle, not only for this UserOperation.
+    /// The TransactionReceipt object for the entire bundle, not only for this UserOperation.
     let receipt: Receipt
 }
 
@@ -137,26 +144,26 @@ struct Receipt: Equatable, Codable {
         case effectiveGasPrice
     }
     
-    //  hash of the transaction
+    ///  hash of the transaction
     let transactionHash: String
-    // The index of the transaction within the block.
+    /// The index of the transaction within the block.
     let transactionIndex: String
-    // The hash of the block where the given transaction was included.
+    /// The hash of the block where the given transaction was included.
     let blockHash: String
-    // The number of the block where the given transaction was included.
+    /// The number of the block where the given transaction was included.
     let blockNumber: String
-    // address of the sender
+    /// address of the sender
     let from: String
-    // address of the receiver. null when its a contract creation transaction
+    /// address of the receiver. null when its a contract creation transaction
     let to: String?
-    // The total amount of gas used when this transaction was executed in the block.
+    /// The total amount of gas used when this transaction was executed in the block.
     let cumulativeGasUsed: String
-    // The amount of gas used by this specific transaction alone
+    /// The amount of gas used by this specific transaction alone
     let gasUsed: String
-    // The contract address created, if the transaction was a contract creation, otherwise null
+    /// The contract address created, if the transaction was a contract creation, otherwise null
     let contractAddress: String?
     let status: String
-    // Bloom filter for light clients to quickly retrieve related logs
+    /// Bloom filter for light clients to quickly retrieve related logs
     let logsBloom: String
     let type: String
     let effectiveGasPrice: String
