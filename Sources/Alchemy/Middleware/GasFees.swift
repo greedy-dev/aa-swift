@@ -12,7 +12,7 @@ extension AlchemyProvider {
     @discardableResult
     public func withAlchemyGasFeeEstimator(baseFeeBufferPercent: BigUInt, maxPriorityFeeBufferPercent: BigUInt) -> Self {
         return self.withFeeDataGetter { structure in
-            let block = try await self.rpcClient.eth_getBlockByNumber(EthereumBlock.Latest)
+            let block = try await self.rpcClient.eth_getBlockFeeInfoByNumber(EthereumBlock.Latest)
             let baseFeePerGas = block.baseFeePerGas ?? BigUInt(0)
             let priorityFeePerGas = try await (self.rpcClient as! AlchemyClient).maxPriorityFeePerGas()
             

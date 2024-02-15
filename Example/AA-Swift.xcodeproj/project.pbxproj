@@ -3,12 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		75213F2D2B7CB52B0087A62C /* Alchemy in Frameworks */ = {isa = PBXBuildFile; productRef = 75213F2C2B7CB52B0087A62C /* Alchemy */; };
-		75213F2F2B7CB52B0087A62C /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 75213F2E2B7CB52B0087A62C /* Core */; };
 		753480682B690915000B4C73 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753480672B690915000B4C73 /* AppDelegate.swift */; };
 		7534806A2B690915000B4C73 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753480692B690915000B4C73 /* SceneDelegate.swift */; };
 		7534806C2B690915000B4C73 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7534806B2B690915000B4C73 /* ViewController.swift */; };
@@ -16,14 +14,13 @@
 		753480712B690916000B4C73 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 753480702B690916000B4C73 /* Assets.xcassets */; };
 		753480742B690916000B4C73 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 753480722B690916000B4C73 /* LaunchScreen.storyboard */; };
 		754966872B6D37DE00D1959A /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 754966862B6D37DE00D1959A /* web3.swift */; };
+		7550DFF52B7E3E4200F5304B /* Alchemy in Frameworks */ = {isa = PBXBuildFile; productRef = 7550DFF42B7E3E4200F5304B /* Alchemy */; };
+		7550DFF72B7E3E4200F5304B /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 7550DFF62B7E3E4200F5304B /* Core */; };
 		75C1D7842B69256D00FD43D3 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C1D7832B69256D00FD43D3 /* MainViewModel.swift */; };
 		75C1D7862B6925B000FD43D3 /* Web3Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 75C1D7852B6925B000FD43D3 /* Web3Auth */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		7512D7B02B7CB475008CD0A8 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
-		7512D7B12B7CB475008CD0A8 /* Sources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Sources; sourceTree = "<group>"; };
-		7512D7B22B7CB475008CD0A8 /* Tests */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Tests; sourceTree = "<group>"; };
 		753480652B690915000B4C73 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		753480672B690915000B4C73 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		753480692B690915000B4C73 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -40,8 +37,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				75213F2D2B7CB52B0087A62C /* Alchemy in Frameworks */,
-				75213F2F2B7CB52B0087A62C /* Core in Frameworks */,
+				7550DFF52B7E3E4200F5304B /* Alchemy in Frameworks */,
+				7550DFF72B7E3E4200F5304B /* Core in Frameworks */,
 				75C1D7862B6925B000FD43D3 /* Web3Auth in Frameworks */,
 				754966872B6D37DE00D1959A /* web3.swift in Frameworks */,
 			);
@@ -53,10 +50,7 @@
 		11CA2C5529F101D90083AFCF = {
 			isa = PBXGroup;
 			children = (
-				7512D7B02B7CB475008CD0A8 /* Package.swift */,
-				7512D7B12B7CB475008CD0A8 /* Sources */,
-				7512D7B22B7CB475008CD0A8 /* Tests */,
-				753480662B690915000B4C73 /* Example */,
+				753480662B690915000B4C73 /* Sources */,
 				11CA2C5F29F101D90083AFCF /* Products */,
 				75A2FBD02B5BFE9F009EDF9E /* Frameworks */,
 			);
@@ -70,7 +64,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		753480662B690915000B4C73 /* Example */ = {
+		753480662B690915000B4C73 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				75C1D7832B69256D00FD43D3 /* MainViewModel.swift */,
@@ -82,7 +76,7 @@
 				753480722B690916000B4C73 /* LaunchScreen.storyboard */,
 				753480752B690916000B4C73 /* Info.plist */,
 			);
-			path = Example;
+			path = Sources;
 			sourceTree = "<group>";
 		};
 		75A2FBD02B5BFE9F009EDF9E /* Frameworks */ = {
@@ -111,8 +105,8 @@
 			packageProductDependencies = (
 				75C1D7852B6925B000FD43D3 /* Web3Auth */,
 				754966862B6D37DE00D1959A /* web3.swift */,
-				75213F2C2B7CB52B0087A62C /* Alchemy */,
-				75213F2E2B7CB52B0087A62C /* Core */,
+				7550DFF42B7E3E4200F5304B /* Alchemy */,
+				7550DFF62B7E3E4200F5304B /* Core */,
 			);
 			productName = Example;
 			productReference = 753480652B690915000B4C73 /* Example.app */;
@@ -145,7 +139,7 @@
 			packageReferences = (
 				75FE7C102B66A64A0072163C /* XCRemoteSwiftPackageReference "web3auth-swift-sdk" */,
 				754966832B6D2F0900D1959A /* XCRemoteSwiftPackageReference "web3" */,
-				75213F2B2B7CB52B0087A62C /* XCRemoteSwiftPackageReference "aa-swift" */,
+				7550DFF32B7E3E4200F5304B /* XCLocalSwiftPackageReference ".." */,
 			);
 			productRefGroup = 11CA2C5F29F101D90083AFCF /* Products */;
 			projectDirPath = "";
@@ -326,7 +320,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Example/Info.plist;
+				INFOPLIST_FILE = Sources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -361,7 +355,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Example/Info.plist;
+				INFOPLIST_FILE = Sources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -407,21 +401,20 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		75213F2B2B7CB52B0087A62C /* XCRemoteSwiftPackageReference "aa-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Syn-McJ/aa-swift.git";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		7550DFF32B7E3E4200F5304B /* XCLocalSwiftPackageReference ".." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ..;
 		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
 		754966832B6D2F0900D1959A /* XCRemoteSwiftPackageReference "web3" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/argentlabs/web3.swift";
 			requirement = {
-				branch = develop;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
 			};
 		};
 		75FE7C102B66A64A0072163C /* XCRemoteSwiftPackageReference "web3auth-swift-sdk" */ = {
@@ -435,20 +428,18 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		75213F2C2B7CB52B0087A62C /* Alchemy */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 75213F2B2B7CB52B0087A62C /* XCRemoteSwiftPackageReference "aa-swift" */;
-			productName = Alchemy;
-		};
-		75213F2E2B7CB52B0087A62C /* Core */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 75213F2B2B7CB52B0087A62C /* XCRemoteSwiftPackageReference "aa-swift" */;
-			productName = Core;
-		};
 		754966862B6D37DE00D1959A /* web3.swift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 754966832B6D2F0900D1959A /* XCRemoteSwiftPackageReference "web3" */;
 			productName = web3.swift;
+		};
+		7550DFF42B7E3E4200F5304B /* Alchemy */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Alchemy;
+		};
+		7550DFF62B7E3E4200F5304B /* Core */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Core;
 		};
 		75C1D7852B6925B000FD43D3 /* Web3Auth */ = {
 			isa = XCSwiftPackageProductDependency;

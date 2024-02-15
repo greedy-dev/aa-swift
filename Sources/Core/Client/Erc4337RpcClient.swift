@@ -30,6 +30,17 @@ struct UserOpCallParams: Encodable {
     }
 }
 
+fileprivate struct GetBlockByNumberCallParams: Encodable {
+    let block: EthereumBlock
+    let fullTransactions: Bool
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(block.stringValue)
+        try container.encode(fullTransactions)
+    }
+}
+
 open class Erc4337RpcClient: BaseEthereumClient, Erc4337Client {
     let networkQueue: OperationQueue
 
@@ -112,7 +123,7 @@ open class Erc4337RpcClient: BaseEthereumClient, Erc4337Client {
             return (base * multiplier) / BigUInt(denominator)
         }
 
-        let block = try await eth_getBlockByNumber(EthereumBlock.Latest)
+        let block = try await eth_getBlockFeeInfoByNumber(EthereumBlock.Latest)
         let maxPriorityFeePerGas = chain.defaultPriorityFee != nil ? chain.defaultPriorityFee! : try await maxPriorityFeePerGas()
         let baseFeePerGas = multiply(block.baseFeePerGas ?? BigUInt(0))
         let maxFeePerGas = baseFeePerGas + maxPriorityFeePerGas
@@ -122,5 +133,20 @@ open class Erc4337RpcClient: BaseEthereumClient, Erc4337Client {
             maxFeePerGas: maxFeePerGas,
             maxPriorityFeePerGas: maxPriorityFeePerGas
         )
+    }
+    
+    public func eth_getBlockFeeInfoByNumber(_ block: EthereumBlock) async throws -> EthereumBlockFeeInfo {
+        let params = GetBlockByNumberCallParams(block: block, fullTransactions: false)
+
+        do {
+            let data = try await networkProvider.send(method: "eth_getBlockByNumber", params: params, receive: EthereumBlockInfo.self)
+            if let blockData = data as? EthereumBlockFeeInfo {
+                return blockData
+            } else {
+                throw EthereumClientError.unexpectedReturnValue
+            }
+        } catch {
+            throw failureHandler(error)
+        }
     }
 }
