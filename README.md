@@ -2,7 +2,7 @@
 
 ### Implementation of [ERC-4337: Account Abstraction](https://eips.ethereum.org/EIPS/eip-4337) in Swift
 
-For the high-level overview, read [this blogpost](https://crewapp.xyz/posts/account-abstraction-mobile/).  
+For a high-level overview, read [this blog post](https://crewapp.xyz/posts/account-abstraction-mobile/).  
 For Kotlin library, [see this](https://github.com/Syn-McJ/aa-kotlin).
 
 ## Installation
