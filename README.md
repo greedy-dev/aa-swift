@@ -48,6 +48,8 @@ try await provider.sendUserOperation(
 )
 ```
 
+## Documentation
+This repository is based on Alchemy's [aa-sdk](https://github.com/alchemyplatform/aa-sdk). Going through their [Account Kit documentation](https://accountkit.alchemy.com/overview/introduction.html) will give you a good idea of the structure of this library.
 
 ## Contributing
 Contributions are welcome. Just open a well-structured issue or a PR.
