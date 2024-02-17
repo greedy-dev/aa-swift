@@ -23,8 +23,6 @@ In Xcode:
 
 ## Getting started
 
-Check the Example app for the full code.  
-
 Send User Operation with Alchemy provider:
 
 ```
@@ -47,6 +45,11 @@ try await provider.sendUserOperation(
     )
 )
 ```
+\
+Check the Example app for the full code:
+\
+\
+<img src="https://crewapp.xyz/images/example.gif" alt="Example gif" style="height: 600px; margin: 0 auto; display: block;" />
 
 ## Documentation
 This repository is based on Alchemy's [aa-sdk](https://github.com/alchemyplatform/aa-sdk). Going through their [Account Kit documentation](https://accountkit.alchemy.com/overview/introduction.html) will give you a good idea of the structure of this library.
