@@ -48,8 +48,6 @@ public protocol Erc4337Client: EthereumRPCProtocol {
      *
      * - Docs: https://viem.sh/docs/actions/public/estimateFeesPerGas.html
      *
-     * - Parameter client: Client to use
-     * - Parameter parameters: {@link EstimateFeesPerGasParameters}
      * - Returns: An estimate (in wei) for the fees per gas. {@link EstimateFeesPerGasReturnType}
      */
     func estimateFeesPerGas(chain: Chain) async throws -> FeeValuesEIP1559

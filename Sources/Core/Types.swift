@@ -9,6 +9,20 @@ import Foundation
 import BigInt
 import web3
 
+public struct SendUserOperationResult {
+    public let hash: String
+    public let request: UserOperationRequest
+}
+
+public struct UserOperationOverrides {
+    public let callGasLimit: BigUInt? = nil
+    public let maxFeePerGas: BigUInt? = nil
+    public let maxPriorityFeePerGas: BigUInt? = nil
+    public let preVerificationGas: BigUInt? = nil
+    public let verificationGasLimit: BigUInt? = nil
+    public let paymasterAndData: String? = nil
+}
+
 public struct UserOperationCallData: Equatable  {
     /// the target of the call
     public let target: EthereumAddress
