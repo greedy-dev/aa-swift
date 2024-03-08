@@ -139,7 +139,7 @@ open class Erc4337RpcClient: BaseEthereumClient, Erc4337Client {
         let params = GetBlockByNumberCallParams(block: block, fullTransactions: false)
 
         do {
-            let data = try await networkProvider.send(method: "eth_getBlockByNumber", params: params, receive: EthereumBlockInfo.self)
+            let data = try await networkProvider.send(method: "eth_getBlockByNumber", params: params, receive: EthereumBlockFeeInfo.self)
             if let blockData = data as? EthereumBlockFeeInfo {
                 return blockData
             } else {

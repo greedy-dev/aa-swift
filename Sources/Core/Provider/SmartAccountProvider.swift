@@ -71,8 +71,8 @@ open class SmartAccountProvider: ISmartAccountProvider {
     
     public func sendUserOperation(
         data: UserOperationCallData,
-        overrides: UserOperationOverrides?
-    ) async throws -> String {
+        overrides: UserOperationOverrides? = nil
+    ) async throws -> SendUserOperationResult {
         guard self.account != nil else {
             throw SmartAccountProviderError.notConnected("Account not connected")
         }
@@ -83,7 +83,7 @@ open class SmartAccountProvider: ISmartAccountProvider {
     
     public func buildUserOperation(
         data: UserOperationCallData,
-        overrides: UserOperationOverrides?
+        overrides: UserOperationOverrides? = nil
     ) async throws -> UserOperationStruct {
         guard var account = self.account else {
             throw SmartAccountProviderError.notConnected("Account not connected")
@@ -105,6 +105,44 @@ open class SmartAccountProvider: ISmartAccountProvider {
         )
 
         return try await self.runMiddlewareStack(uoStruct: &userOperationStruct, overrides: overrides ?? UserOperationOverrides())
+    }
+    
+    public func dropAndReplaceUserOperation(
+        uoToDrop: UserOperationRequest,
+        overrides: UserOperationOverrides? = nil
+    ) async throws -> SendUserOperationResult {
+        var uoToSubmit = UserOperationStruct(
+            sender: uoToDrop.sender,
+            nonce: BigUInt(hex: uoToDrop.nonce)!,
+            initCode: uoToDrop.initCode,
+            callData: uoToDrop.callData,
+            paymasterAndData: uoToDrop.paymasterAndData,
+            signature: Data(hex: uoToDrop.signature)!
+        )
+        
+        // Run once to get the fee estimates
+        // This can happen at any part of the middleware stack, so we want to run it all
+        let estimates = try await self.runMiddlewareStack(uoStruct: &uoToSubmit, overrides: overrides ?? UserOperationOverrides())
+        
+        let newOverrides = UserOperationOverrides(
+            maxFeePerGas: max(
+                estimates.maxFeePerGas ?? BigUInt(0),
+                bigIntPercent(
+                    base: BigUInt(hex: uoToDrop.maxFeePerGas)!,
+                    percent: BigUInt(110)
+                )
+            ),
+            maxPriorityFeePerGas: max(
+                estimates.maxPriorityFeePerGas ?? BigUInt(0),
+                bigIntPercent(
+                    base: BigUInt(hex: uoToDrop.maxPriorityFeePerGas)!,
+                    percent: BigUInt(110)
+                )
+            )
+        )
+
+        let uoToSend = try await self.runMiddlewareStack(uoStruct: &uoToSubmit, overrides: newOverrides)
+        return try await self.sendUserOperation(uoStruct: uoToSend)
     }
     
     public func waitForUserOperationTransaction(hash: String) async throws -> UserOperationReceipt {
@@ -217,7 +255,6 @@ open class SmartAccountProvider: ISmartAccountProvider {
         // Refer to https://docs.alchemy.com/docs/maxpriorityfeepergas-vs-maxfeepergas
         // for more information about maxFeePerGas and maxPriorityFeePerGas
         
-        
         let feeData = try await rpcClient.estimateFeesPerGas(chain: chain)
         var maxPriorityFeePerGas = overrides.maxPriorityFeePerGas
         
@@ -268,7 +305,7 @@ open class SmartAccountProvider: ISmartAccountProvider {
         return try chain.getDefaultEntryPointAddress()
     }
 
-    private func sendUserOperation(uoStruct: UserOperationStruct) async throws -> String {
+    private func sendUserOperation(uoStruct: UserOperationStruct) async throws -> SendUserOperationResult {
         guard let account = self.account else {
             throw SmartAccountProviderError.notConnected("Account not connected")
         }
@@ -285,7 +322,7 @@ open class SmartAccountProvider: ISmartAccountProvider {
         let request = uoStructFinal.toUserOperationRequest()
         let uoHash = try await rpcClient!.sendUserOperation(request: request, entryPoint: address.asString())
         
-        return uoHash
+        return SendUserOperationResult(hash: uoHash, request: request)
     }
     
     private func chain<A, B, C>(_ f: @escaping (A, inout B, C) async throws -> B, with g: @escaping (A, inout B, C) async throws -> B) -> ((A, inout B, C) async throws -> B) {

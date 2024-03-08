@@ -15,12 +15,21 @@ public struct SendUserOperationResult {
 }
 
 public struct UserOperationOverrides {
-    public let callGasLimit: BigUInt? = nil
-    public let maxFeePerGas: BigUInt? = nil
-    public let maxPriorityFeePerGas: BigUInt? = nil
-    public let preVerificationGas: BigUInt? = nil
-    public let verificationGasLimit: BigUInt? = nil
-    public let paymasterAndData: String? = nil
+    public let callGasLimit: BigUInt?
+    public let maxFeePerGas: BigUInt?
+    public let maxPriorityFeePerGas: BigUInt?
+    public let preVerificationGas: BigUInt?
+    public let verificationGasLimit: BigUInt?
+    public let paymasterAndData: String?
+    
+    public init(callGasLimit: BigUInt? = nil, maxFeePerGas: BigUInt? = nil, maxPriorityFeePerGas: BigUInt? = nil, preVerificationGas: BigUInt? = nil, verificationGasLimit: BigUInt? = nil, paymasterAndData: String? = nil) {
+        self.callGasLimit = callGasLimit
+        self.maxFeePerGas = maxFeePerGas
+        self.maxPriorityFeePerGas = maxPriorityFeePerGas
+        self.preVerificationGas = preVerificationGas
+        self.verificationGasLimit = verificationGasLimit
+        self.paymasterAndData = paymasterAndData
+    }
 }
 
 public struct UserOperationCallData: Equatable  {
