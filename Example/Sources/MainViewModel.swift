@@ -186,8 +186,9 @@ class MainViewModel {
             data: UserOperationCallData(
                 target: EthereumAddress(alchemyTokenSepoliaAddress),
                 data: encodedFn.encoded()
-            )
-        )
+            ), 
+            overrides: UserOperationOverrides()
+        ).hash
     }
 
     private func refreshAlchemyTokenBalance() async throws {
