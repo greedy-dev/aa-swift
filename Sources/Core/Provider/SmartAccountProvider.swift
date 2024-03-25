@@ -362,7 +362,6 @@ open class SmartAccountProvider: ISmartAccountProvider {
     
     private func chain<A, B, C>(_ f: @escaping (A, inout B, C) async throws -> B, with g: @escaping (A, inout B, C) async throws -> B) -> ((A, inout B, C) async throws -> B) {
         return { x, y, z in
-            var result = try await g(x, &y, z)
             return try await f(x, &y, z)
         }
     }
