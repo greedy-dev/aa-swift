@@ -21,25 +21,41 @@ public protocol ISmartAccountProvider {
 
     /**
      Sends a user operation using the connected account.
-     - Parameter data: UserOperationCallData
-     - Parameter overrides: optional {@link UserOperationOverrides}
+     - Parameter data: `UserOperationCallData`
+     - Parameter overrides: optional `UserOperationOverrides`
      - Returns: String containing the hash
     */
     func sendUserOperation(data: UserOperationCallData, overrides: UserOperationOverrides?) async throws -> SendUserOperationResult
+    
+    /**
+     Sends a user operation using the connected account.
+     - Parameter data: list of `UserOperationCallData`
+     - Parameter overrides: optional `UserOperationOverrides`
+     - Returns: String containing the hash
+    */
+    func sendUserOperation(data: [UserOperationCallData], overrides: UserOperationOverrides?) async throws -> SendUserOperationResult
 
     /**
      Allows you to get the unsigned UserOperation struct with all of the middleware run on it
      - Parameter data: UserOperationCallData
-     - Parameter overrides: optional {@link UserOperationOverrides}
+     - Parameter overrides: optional `UserOperationOverrides`
      - Returns: UserOperationStruct resulting from the middleware pipeline
     */
     func buildUserOperation(data: UserOperationCallData, overrides: UserOperationOverrides?) async throws -> UserOperationStruct
     
     /**
+     Allows you to get the unsigned UserOperation struct with all of the middleware run on it
+     - Parameter data: list of `UserOperationCallData`
+     - Parameter overrides: optional `UserOperationOverrides`
+     - Returns: UserOperationStruct resulting from the middleware pipeline
+    */
+    func buildUserOperation(data: [UserOperationCallData], overrides: UserOperationOverrides?) async throws -> UserOperationStruct
+    
+    /**
      Attempts to drop and replace an existing user operation by increasing fees
      - Parameter data: an existing user operation request returned by `sendUserOperation`
-     - Parameter overrides: optional {@link UserOperationOverrides}
-     - Returns: {@link SendUserOperationResult} containing the hash and request
+     - Parameter overrides: optional `UserOperationOverrides`
+     - Returns: `SendUserOperationResult` containing the hash and request
     */
     func dropAndReplaceUserOperation(uoToDrop: UserOperationRequest, overrides: UserOperationOverrides?) async throws -> SendUserOperationResult
 

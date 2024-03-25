@@ -81,6 +81,15 @@ open class SmartAccountProvider: ISmartAccountProvider {
         return try await sendUserOperation(uoStruct: uoStruct)
     }
     
+    public func sendUserOperation(data: [UserOperationCallData], overrides: UserOperationOverrides?) async throws -> SendUserOperationResult {
+        guard self.account != nil else {
+            throw SmartAccountProviderError.notConnected("Account not connected")
+        }
+
+        let uoStruct = try await self.buildUserOperation(data: data, overrides: overrides)
+        return try await sendUserOperation(uoStruct: uoStruct)
+    }
+    
     public func buildUserOperation(
         data: UserOperationCallData,
         overrides: UserOperationOverrides? = nil
@@ -93,6 +102,32 @@ open class SmartAccountProvider: ISmartAccountProvider {
         let address = try await self.getAddress()
         let nonce = try await account.getNonce()
         let callData = await account.encodeExecute(target: data.target, value: data.value ?? BigUInt(0), data: data.data)
+        let signature = account.getDummySignature()
+
+        var userOperationStruct = UserOperationStruct(
+            sender: address.asString(),
+            nonce: nonce,
+            initCode: initCode,
+            callData: callData,
+            paymasterAndData: "0x",
+            signature: signature
+        )
+
+        return try await self.runMiddlewareStack(uoStruct: &userOperationStruct, overrides: overrides ?? UserOperationOverrides())
+    }
+    
+    public func buildUserOperation(
+        data: [UserOperationCallData],
+        overrides: UserOperationOverrides? = nil
+    ) async throws -> UserOperationStruct {
+        guard var account = self.account else {
+            throw SmartAccountProviderError.notConnected("Account not connected")
+        }
+
+        let initCode = try await account.getInitCode()
+        let address = try await self.getAddress()
+        let nonce = try await account.getNonce()
+        let callData = await account.encodeBatchExecute(txs: data)
         let signature = account.getDummySignature()
 
         var userOperationStruct = UserOperationStruct(

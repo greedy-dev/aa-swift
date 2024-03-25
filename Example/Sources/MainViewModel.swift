@@ -183,10 +183,16 @@ class MainViewModel {
         try await encodedFn.encode(provider.getAddress())
         
         return try await provider.sendUserOperation(
-            data: UserOperationCallData(
-                target: EthereumAddress(alchemyTokenSepoliaAddress),
-                data: encodedFn.encoded()
-            ), 
+            data: [
+                UserOperationCallData(
+                    target: EthereumAddress(alchemyTokenSepoliaAddress),
+                    data: encodedFn.encoded()
+                ),
+                UserOperationCallData(
+                    target: EthereumAddress(alchemyTokenSepoliaAddress),
+                    data: encodedFn.encoded()
+                )
+            ],
             overrides: UserOperationOverrides()
         ).hash
     }

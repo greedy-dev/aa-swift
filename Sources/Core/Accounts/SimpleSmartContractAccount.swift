@@ -59,7 +59,14 @@ open class SimpleSmartContractAccount: BaseSmartContractAccount {
     }
     
     public func encodeBatchExecute(txs: [UserOperationCallData]) async -> String {
-        fatalError("Not yet implemented")
+        let targets = txs.map { $0.target }
+        let datas = txs.map { $0.data }
+        
+        let encodedFn = ABIFunctionEncoder("executeBatch")
+        try! encodedFn.encode(targets)
+        try! encodedFn.encode(datas)
+        
+        return try! encodedFn.encoded().web3.hexString
     }
     
     public func signMessage(msg: Data) async throws -> Data {
