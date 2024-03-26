@@ -12,9 +12,9 @@ public protocol Erc4337Client: EthereumRPCProtocol {
     /**
      * calls eth_estimateUserOperationGas and  returns the result
      *
-     * - Parameter request: the {@link UserOperationRequest} to estimate gas for
+     * - Parameter request: the `UserOperationRequest` to estimate gas for
      * - Parameter entryPoint: the entrypoint address the op will be sent to
-     * - Returns: the gas estimates for the given response (see: {@link UserOperationEstimateGasResponse})
+     * - Returns: the gas estimates for the given response (see: `EstimateUserOperationGasResponse`)
      */
     func estimateUserOperationGas(
         request: UserOperationRequest,
@@ -24,7 +24,7 @@ public protocol Erc4337Client: EthereumRPCProtocol {
     /**
      * calls eth_sendUserOperation and returns the hash of the sent UserOperation
      *
-     * - Parameter request: the {@link UserOperationRequest} to send
+     * - Parameter request: the `UserOperationRequest` to send
      * - Parameter entryPoint: the entrypoint address the op will be sent to
      * - Returns: the hash of the sent UserOperation
      */
@@ -34,10 +34,10 @@ public protocol Erc4337Client: EthereumRPCProtocol {
     ) async throws -> String
 
     /**
-     * calls `eth_getUserOperationReceipt` and returns the {@link UserOperationReceipt}
+     * calls `eth_getUserOperationReceipt` and returns the `UserOperationReceipt`
      *
      * - Parameter hash: the hash of the UserOperation to get the receipt for
-     * - Returns: {@link UserOperationResponse}
+     * - Returns: `UserOperationResponse`
      */
     func getUserOperationReceipt(hash: String) async throws -> UserOperationReceipt
 
@@ -48,9 +48,7 @@ public protocol Erc4337Client: EthereumRPCProtocol {
      *
      * - Docs: https://viem.sh/docs/actions/public/estimateFeesPerGas.html
      *
-     * - Parameter client: Client to use
-     * - Parameter parameters: {@link EstimateFeesPerGasParameters}
-     * - Returns: An estimate (in wei) for the fees per gas. {@link EstimateFeesPerGasReturnType}
+     * - Returns: An estimate (in wei) for the fees per gas.
      */
     func estimateFeesPerGas(chain: Chain) async throws -> FeeValuesEIP1559
     

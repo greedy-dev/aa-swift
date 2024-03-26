@@ -9,7 +9,7 @@ import Foundation
 import BigInt
 import web3
 
-public typealias AccountMiddlewareFn = (inout UserOperationStruct) async throws -> UserOperationStruct
+public typealias ClientMiddlewareFn = (Erc4337Client, inout UserOperationStruct, UserOperationOverrides) async throws -> UserOperationStruct
 
 // Based on https://github.com/alchemyplatform/aa-sdk/blob/main/packages/core/src/provider/types.ts#L95
 public protocol ISmartAccountProvider {
@@ -21,17 +21,43 @@ public protocol ISmartAccountProvider {
 
     /**
      Sends a user operation using the connected account.
-     - Parameter data: UserOperationCallData
+     - Parameter data: `UserOperationCallData`
+     - Parameter overrides: optional `UserOperationOverrides`
      - Returns: String containing the hash
     */
-    func sendUserOperation(data: UserOperationCallData) async throws -> String
+    func sendUserOperation(data: UserOperationCallData, overrides: UserOperationOverrides?) async throws -> SendUserOperationResult
+    
+    /**
+     Sends a user operation using the connected account.
+     - Parameter data: list of `UserOperationCallData`
+     - Parameter overrides: optional `UserOperationOverrides`
+     - Returns: String containing the hash
+    */
+    func sendUserOperation(data: [UserOperationCallData], overrides: UserOperationOverrides?) async throws -> SendUserOperationResult
 
     /**
      Allows you to get the unsigned UserOperation struct with all of the middleware run on it
      - Parameter data: UserOperationCallData
+     - Parameter overrides: optional `UserOperationOverrides`
      - Returns: UserOperationStruct resulting from the middleware pipeline
     */
-    func buildUserOperation(data: UserOperationCallData) async throws -> UserOperationStruct
+    func buildUserOperation(data: UserOperationCallData, overrides: UserOperationOverrides?) async throws -> UserOperationStruct
+    
+    /**
+     Allows you to get the unsigned UserOperation struct with all of the middleware run on it
+     - Parameter data: list of `UserOperationCallData`
+     - Parameter overrides: optional `UserOperationOverrides`
+     - Returns: UserOperationStruct resulting from the middleware pipeline
+    */
+    func buildUserOperation(data: [UserOperationCallData], overrides: UserOperationOverrides?) async throws -> UserOperationStruct
+    
+    /**
+     Attempts to drop and replace an existing user operation by increasing fees
+     - Parameter data: an existing user operation request returned by `sendUserOperation`
+     - Parameter overrides: optional `UserOperationOverrides`
+     - Returns: `SendUserOperationResult` containing the hash and request
+    */
+    func dropAndReplaceUserOperation(uoToDrop: UserOperationRequest, overrides: UserOperationOverrides?) async throws -> SendUserOperationResult
 
     /**
      Waits for the user operation to be included in a transaction that's been mined.
@@ -45,16 +71,16 @@ public protocol ISmartAccountProvider {
     
     /// Overrides the feeDataGetter middleware for setting the fee fields on the UserOperation
     @discardableResult
-    func withFeeDataGetter(feeDataGetter: @escaping AccountMiddlewareFn) -> ISmartAccountProvider
+    func withFeeDataGetter(feeDataGetter: @escaping ClientMiddlewareFn) -> ISmartAccountProvider
 
     /// Overrides the gasEstimator middleware for setting the gasLimit fields on the UserOperation
     @discardableResult
-    func withGasEstimator(gasEstimator: @escaping AccountMiddlewareFn) -> ISmartAccountProvider
+    func withGasEstimator(gasEstimator: @escaping ClientMiddlewareFn) -> ISmartAccountProvider
 
     /// Overrides the default dummy paymaster data middleware and get paymaster and data middleware
     @discardableResult
     func withPaymasterMiddleware(
-        dummyPaymasterDataMiddleware: AccountMiddlewareFn?,
-        paymasterDataMiddleware: AccountMiddlewareFn?
+        dummyPaymasterDataMiddleware: ClientMiddlewareFn?,
+        paymasterDataMiddleware: ClientMiddlewareFn?
     ) -> ISmartAccountProvider
 }

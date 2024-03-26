@@ -15,14 +15,14 @@ public struct Currency {
 }
 
 public class Chain: Equatable {
-    public let id: Int
+    public let id: Int64
     public let network: String
     public let name: String
     public let currency: Currency
     public let baseFeeMultiplier: Double?
     public let defaultPriorityFee: BigUInt?
 
-    public init(id: Int, network: String, name: String, currency: Currency, baseFeeMultiplier: Double? = nil, defaultPriorityFee: BigUInt? = nil) {
+    public init(id: Int64, network: String, name: String, currency: Currency, baseFeeMultiplier: Double? = nil, defaultPriorityFee: BigUInt? = nil) {
         self.id = id
         self.network = network
         self.name = name

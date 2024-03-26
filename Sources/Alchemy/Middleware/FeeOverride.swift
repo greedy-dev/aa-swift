@@ -11,6 +11,14 @@ public struct FeeOverride: Encodable {
     public let callGasLimit: String?
     public let verificationGasLimit: String?
     public let preVerificationGas: String?
+
+    public var isEmpty: Bool {
+        maxFeePerGas == nil &&
+        maxPriorityFeePerGas == nil &&
+        callGasLimit == nil &&
+        verificationGasLimit == nil &&
+        preVerificationGas == nil
+    }
     
     init(maxFeePerGas: String? = nil, maxPriorityFeePerGas: String? = nil, callGasLimit: String? = nil, verificationGasLimit: String? = nil, preVerificationGas: String? = nil) {
         self.maxFeePerGas = maxFeePerGas

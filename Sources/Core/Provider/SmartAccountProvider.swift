@@ -17,24 +17,17 @@ public enum SmartAccountProviderError: Error {
 }
 
 open class SmartAccountProvider: ISmartAccountProvider {
-    private static let minPriorityFeePerBidDefaults: [Int: Int64] = [
-        Chain.Arbitrum.id: 10_000_000,
-        Chain.ArbitrumGoerli.id: 10_000_000,
-        Chain.ArbitrumSepolia.id: 10_000_000
-    ]
-
     public let rpcClient: Erc4337Client!
     public let chain: Chain!
     let entryPointAddress: EthereumAddress!
     let opts: SmartAccountProviderOpts!
 
     private var account: ISmartContractAccount?
-    private var gasEstimator: AccountMiddlewareFn!
-    private var feeDataGetter: AccountMiddlewareFn!
-    private var paymasterDataMiddleware: AccountMiddlewareFn!
-    private var dummyPaymasterDataMiddleware: AccountMiddlewareFn!
-
-    private let minPriorityFeePerBid: BigUInt
+    private var gasEstimator: ClientMiddlewareFn!
+    private var feeDataGetter: ClientMiddlewareFn!
+    private var paymasterDataMiddleware: ClientMiddlewareFn!
+    private var overridePaymasterDataMiddleware: ClientMiddlewareFn!
+    private var dummyPaymasterDataMiddleware: ClientMiddlewareFn!
 
     public var isConnected: Bool {
         return self.account != nil
@@ -55,14 +48,12 @@ open class SmartAccountProvider: ISmartAccountProvider {
         self.chain = chain
         self.entryPointAddress = entryPointAddress
         self.opts = opts
-
-        let defaultFee = SmartAccountProvider.minPriorityFeePerBidDefaults[chain.id] ?? 100_000_000
-        self.minPriorityFeePerBid = BigUInt(opts?.minPriorityFeePerBid ?? defaultFee)
         
         self.gasEstimator = defaultGasEstimator
         self.feeDataGetter = defaultFeeDataGetter
         self.paymasterDataMiddleware = defaultPaymasterDataMiddleware
         self.dummyPaymasterDataMiddleware = defaultDummyPaymasterDataMiddleware
+        self.overridePaymasterDataMiddleware = defaultOverridePaymasterDataMiddleware
     }
     
     public func connect(account: ISmartContractAccount) {
@@ -78,16 +69,31 @@ open class SmartAccountProvider: ISmartAccountProvider {
         return try await account.getAddress()
     }
     
-    public func sendUserOperation(data: UserOperationCallData) async throws -> String {
+    public func sendUserOperation(
+        data: UserOperationCallData,
+        overrides: UserOperationOverrides? = nil
+    ) async throws -> SendUserOperationResult {
         guard self.account != nil else {
             throw SmartAccountProviderError.notConnected("Account not connected")
         }
 
-        let uoStruct = try await self.buildUserOperation(data: data)
+        let uoStruct = try await self.buildUserOperation(data: data, overrides: overrides)
         return try await sendUserOperation(uoStruct: uoStruct)
     }
     
-    public func buildUserOperation(data: UserOperationCallData) async throws -> UserOperationStruct {
+    public func sendUserOperation(data: [UserOperationCallData], overrides: UserOperationOverrides?) async throws -> SendUserOperationResult {
+        guard self.account != nil else {
+            throw SmartAccountProviderError.notConnected("Account not connected")
+        }
+
+        let uoStruct = try await self.buildUserOperation(data: data, overrides: overrides)
+        return try await sendUserOperation(uoStruct: uoStruct)
+    }
+    
+    public func buildUserOperation(
+        data: UserOperationCallData,
+        overrides: UserOperationOverrides? = nil
+    ) async throws -> UserOperationStruct {
         guard var account = self.account else {
             throw SmartAccountProviderError.notConnected("Account not connected")
         }
@@ -107,7 +113,71 @@ open class SmartAccountProvider: ISmartAccountProvider {
             signature: signature
         )
 
-        return try await self.runMiddlewareStack(uoStruct: &userOperationStruct)
+        return try await self.runMiddlewareStack(uoStruct: &userOperationStruct, overrides: overrides ?? UserOperationOverrides())
+    }
+    
+    public func buildUserOperation(
+        data: [UserOperationCallData],
+        overrides: UserOperationOverrides? = nil
+    ) async throws -> UserOperationStruct {
+        guard var account = self.account else {
+            throw SmartAccountProviderError.notConnected("Account not connected")
+        }
+
+        let initCode = try await account.getInitCode()
+        let address = try await self.getAddress()
+        let nonce = try await account.getNonce()
+        let callData = await account.encodeBatchExecute(txs: data)
+        let signature = account.getDummySignature()
+
+        var userOperationStruct = UserOperationStruct(
+            sender: address.asString(),
+            nonce: nonce,
+            initCode: initCode,
+            callData: callData,
+            paymasterAndData: "0x",
+            signature: signature
+        )
+
+        return try await self.runMiddlewareStack(uoStruct: &userOperationStruct, overrides: overrides ?? UserOperationOverrides())
+    }
+    
+    public func dropAndReplaceUserOperation(
+        uoToDrop: UserOperationRequest,
+        overrides: UserOperationOverrides? = nil
+    ) async throws -> SendUserOperationResult {
+        var uoToSubmit = UserOperationStruct(
+            sender: uoToDrop.sender,
+            nonce: BigUInt(hex: uoToDrop.nonce)!,
+            initCode: uoToDrop.initCode,
+            callData: uoToDrop.callData,
+            paymasterAndData: uoToDrop.paymasterAndData,
+            signature: Data(hex: uoToDrop.signature)!
+        )
+        
+        // Run once to get the fee estimates
+        // This can happen at any part of the middleware stack, so we want to run it all
+        let estimates = try await self.runMiddlewareStack(uoStruct: &uoToSubmit, overrides: overrides ?? UserOperationOverrides())
+        
+        let newOverrides = UserOperationOverrides(
+            maxFeePerGas: max(
+                estimates.maxFeePerGas ?? BigUInt(0),
+                bigIntPercent(
+                    base: BigUInt(hex: uoToDrop.maxFeePerGas)!,
+                    percent: BigUInt(110)
+                )
+            ),
+            maxPriorityFeePerGas: max(
+                estimates.maxPriorityFeePerGas ?? BigUInt(0),
+                bigIntPercent(
+                    base: BigUInt(hex: uoToDrop.maxPriorityFeePerGas)!,
+                    percent: BigUInt(110)
+                )
+            )
+        )
+
+        let uoToSend = try await self.runMiddlewareStack(uoStruct: &uoToSubmit, overrides: newOverrides)
+        return try await self.sendUserOperation(uoStruct: uoToSend)
     }
     
     public func waitForUserOperationTransaction(hash: String) async throws -> UserOperationReceipt {
@@ -132,19 +202,19 @@ open class SmartAccountProvider: ISmartAccountProvider {
     }
     
     @discardableResult
-    public func withFeeDataGetter(feeDataGetter: @escaping AccountMiddlewareFn) -> ISmartAccountProvider {
+    public func withFeeDataGetter(feeDataGetter: @escaping ClientMiddlewareFn) -> ISmartAccountProvider {
         self.feeDataGetter = feeDataGetter
         return self
     }
     
     @discardableResult
-    public func withGasEstimator(gasEstimator: @escaping AccountMiddlewareFn) -> ISmartAccountProvider {
+    public func withGasEstimator(gasEstimator: @escaping ClientMiddlewareFn) -> ISmartAccountProvider {
         self.gasEstimator = gasEstimator
         return self
     }
     
     @discardableResult
-    public func withPaymasterMiddleware(dummyPaymasterDataMiddleware: AccountMiddlewareFn?, paymasterDataMiddleware: AccountMiddlewareFn?) -> ISmartAccountProvider {
+    public func withPaymasterMiddleware(dummyPaymasterDataMiddleware: ClientMiddlewareFn?, paymasterDataMiddleware: ClientMiddlewareFn?) -> ISmartAccountProvider {
         
         if let dummyPaymasterDataMiddleware = dummyPaymasterDataMiddleware {
             self.dummyPaymasterDataMiddleware = dummyPaymasterDataMiddleware
@@ -157,54 +227,102 @@ open class SmartAccountProvider: ISmartAccountProvider {
         return self
     }
     
-    private func runMiddlewareStack(uoStruct: inout UserOperationStruct) async throws -> UserOperationStruct {
+    private func runMiddlewareStack(
+        uoStruct: inout UserOperationStruct,
+        overrides: UserOperationOverrides
+    ) async throws -> UserOperationStruct {
+        let paymasterData = if overrides.paymasterAndData != nil {
+            overridePaymasterDataMiddleware
+        } else {
+            paymasterDataMiddleware
+        }
+        
         // Reversed order - dummyPaymasterDataMiddleware is called first
-        let asyncPipe = chain(paymasterDataMiddleware, with:
+        let asyncPipe = chain(paymasterData!, with:
                         chain(gasEstimator, with:
                         chain(feeDataGetter, with:
                               dummyPaymasterDataMiddleware)))
-        return try await asyncPipe(&uoStruct)
+        return try await asyncPipe(rpcClient, &uoStruct, overrides)
     }
 
     // These are dependent on the specific paymaster being used
     // You should implement your own middleware to override these
     // or extend this class and provider your own implementation
     
-    open func defaultDummyPaymasterDataMiddleware(operation: inout UserOperationStruct) async throws -> UserOperationStruct {
+    open func defaultDummyPaymasterDataMiddleware(
+        client: Erc4337Client,
+        operation: inout UserOperationStruct,
+        overrides: UserOperationOverrides
+    ) async throws -> UserOperationStruct {
         operation.paymasterAndData = "0x"
         return operation
     }
     
-    open func defaultPaymasterDataMiddleware(operation: inout UserOperationStruct) async throws -> UserOperationStruct {
+    open func defaultOverridePaymasterDataMiddleware(
+        client: Erc4337Client,
+        operation: inout UserOperationStruct,
+        overrides: UserOperationOverrides
+    ) async throws -> UserOperationStruct {
+        operation.paymasterAndData = overrides.paymasterAndData ?? "0x"
+        return operation
+    }
+    
+    open func defaultPaymasterDataMiddleware(
+        client: Erc4337Client,
+        operation: inout UserOperationStruct,
+        overrides: UserOperationOverrides
+    ) async throws -> UserOperationStruct {
         operation.paymasterAndData = "0x"
         return operation
     }
     
-    open func defaultFeeDataGetter(operation: inout UserOperationStruct) async throws -> UserOperationStruct {
-        let maxPriorityFeePerGas = try await rpcClient.maxPriorityFeePerGas()
+    open func defaultFeeDataGetter(
+        client: Erc4337Client,
+        operation: inout UserOperationStruct,
+        overrides: UserOperationOverrides
+    ) async throws -> UserOperationStruct {
+        // maxFeePerGas must be at least the sum of maxPriorityFeePerGas and baseFee
+        // so we need to accommodate for the fee option applied maxPriorityFeePerGas for the maxFeePerGas
+        //
+        // Note that if maxFeePerGas is not at least the sum of maxPriorityFeePerGas and required baseFee
+        // after applying the fee options, then the transaction will fail
+        //
+        // Refer to https://docs.alchemy.com/docs/maxpriorityfeepergas-vs-maxfeepergas
+        // for more information about maxFeePerGas and maxPriorityFeePerGas
+        
         let feeData = try await rpcClient.estimateFeesPerGas(chain: chain)
+        var maxPriorityFeePerGas = overrides.maxPriorityFeePerGas
+        
+        if maxPriorityFeePerGas == nil {
+            maxPriorityFeePerGas = try await rpcClient.maxPriorityFeePerGas()
+        }
+        
+        let maxFeePerGas = overrides.maxFeePerGas ?? (feeData.maxFeePerGas - feeData.maxPriorityFeePerGas + maxPriorityFeePerGas!)
 
-        // set maxPriorityFeePerGasBid to the max between 33% added priority fee estimate and
-        // the min priority fee per gas set for the provider
-        let maxPriorityFeePerGasBid = max(bigIntPercent(
-            base: maxPriorityFeePerGas,
-            percent: BigUInt(100 + (opts?.maxPriorityFeePerGasEstimateBuffer ?? 33))
-        ), minPriorityFeePerBid)
-
-        let maxFeePerGasBid = feeData.maxFeePerGas - feeData.maxPriorityFeePerGas + maxPriorityFeePerGasBid
-        operation.maxFeePerGas = maxFeePerGasBid
-        operation.maxPriorityFeePerGas = maxPriorityFeePerGasBid
+        operation.maxFeePerGas = maxFeePerGas
+        operation.maxPriorityFeePerGas = maxPriorityFeePerGas
 
         return operation
     }
     
-    open func defaultGasEstimator(operation: inout UserOperationStruct) async throws -> UserOperationStruct {
-        let request = operation.toUserOperationRequest()
-        let estimates = try await rpcClient.estimateUserOperationGas(request: request, entryPoint: getEntryPointAddress().asString())
+    open func defaultGasEstimator(
+        client: Erc4337Client,
+        operation: inout UserOperationStruct,
+        overrides: UserOperationOverrides
+    ) async throws -> UserOperationStruct {
+        var estimates: EstimateUserOperationGasResponse? = nil
 
-        operation.preVerificationGas = estimates.preVerificationGas
-        operation.verificationGasLimit = estimates.verificationGasLimit
-        operation.callGasLimit = estimates.callGasLimit
+        if (overrides.callGasLimit == nil ||
+            overrides.verificationGasLimit == nil ||
+            overrides.preVerificationGas == nil
+        ) {
+            let request = operation.toUserOperationRequest()
+            estimates = try await rpcClient.estimateUserOperationGas(request: request, entryPoint: getEntryPointAddress().asString())
+        }
+
+        operation.preVerificationGas = overrides.preVerificationGas ?? estimates!.preVerificationGas
+        operation.verificationGasLimit = overrides.verificationGasLimit ?? estimates!.verificationGasLimit
+        operation.callGasLimit = overrides.callGasLimit ?? estimates!.callGasLimit
         
         return operation
     }
@@ -222,7 +340,7 @@ open class SmartAccountProvider: ISmartAccountProvider {
         return try chain.getDefaultEntryPointAddress()
     }
 
-    private func sendUserOperation(uoStruct: UserOperationStruct) async throws -> String {
+    private func sendUserOperation(uoStruct: UserOperationStruct) async throws -> SendUserOperationResult {
         guard let account = self.account else {
             throw SmartAccountProviderError.notConnected("Account not connected")
         }
@@ -239,13 +357,12 @@ open class SmartAccountProvider: ISmartAccountProvider {
         let request = uoStructFinal.toUserOperationRequest()
         let uoHash = try await rpcClient!.sendUserOperation(request: request, entryPoint: address.asString())
         
-        return uoHash
+        return SendUserOperationResult(hash: uoHash, request: request)
     }
     
-    private func chain<A>(_ f: @escaping (inout A) async throws -> A, with g: @escaping (inout A) async throws -> A) -> ((inout A) async throws -> A) {
-        return { x in
-            var result = try await g(&x)
-            return try await f(&result)
+    private func chain<A, B, C>(_ f: @escaping (A, inout B, C) async throws -> B, with g: @escaping (A, inout B, C) async throws -> B) -> ((A, inout B, C) async throws -> B) {
+        return { x, y, z in
+            return try await f(x, &y, z)
         }
     }
 }

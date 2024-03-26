@@ -7,23 +7,23 @@
 
 import BigInt
 import web3
+import AASwift
 
-extension AlchemyProvider {
-    @discardableResult
-    public func withAlchemyGasFeeEstimator(baseFeeBufferPercent: BigUInt, maxPriorityFeeBufferPercent: BigUInt) -> Self {
-        return self.withFeeDataGetter { structure in
-            let block = try await self.rpcClient.eth_getBlockFeeInfoByNumber(EthereumBlock.Latest)
-            let baseFeePerGas = block.baseFeePerGas ?? BigUInt(0)
-            let priorityFeePerGas = try await (self.rpcClient as! AlchemyClient).maxPriorityFeePerGas()
-            
-            let baseFeeIncrease = (baseFeePerGas * (BigUInt(100) + baseFeeBufferPercent)) / BigUInt(100)
-            let priorityFeeIncrease = (priorityFeePerGas * (BigUInt(100) + maxPriorityFeeBufferPercent)) / BigUInt(100)
-            
-            var uoStruct = structure
-            uoStruct.maxFeePerGas = baseFeeIncrease + priorityFeeIncrease
-            uoStruct.maxPriorityFeePerGas = priorityFeeIncrease
-            
-            return uoStruct
-        } as! Self
+let alchemyFeeEstimator: ClientMiddlewareFn = { rpcClient, operation, overrides in
+    if overrides.maxFeePerGas != nil && overrides.maxPriorityFeePerGas != nil {
+        operation.maxFeePerGas = overrides.maxFeePerGas
+        operation.maxPriorityFeePerGas = overrides.maxPriorityFeePerGas
+    } else {
+        let block = try await rpcClient.eth_getBlockFeeInfoByNumber(EthereumBlock.Latest)
+        let baseFeePerGas = block.baseFeePerGas ?? BigUInt(0)
+        let maxPriorityFeePerGasEstimate =
+            // it's a fair assumption that if someone is using this Alchemy Middleware, then they are using Alchemy RPC
+            try await (rpcClient as! AlchemyClient).maxPriorityFeePerGas()
+
+        let maxPriorityFeePerGas = overrides.maxPriorityFeePerGas ?? maxPriorityFeePerGasEstimate
+        operation.maxPriorityFeePerGas = maxPriorityFeePerGas
+        operation.maxFeePerGas = baseFeePerGas + maxPriorityFeePerGas
     }
+        
+    return operation
 }

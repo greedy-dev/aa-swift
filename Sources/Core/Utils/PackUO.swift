@@ -20,7 +20,7 @@ import BigInt
 func getUserOperationHash(
     request: UserOperationStruct,
     entryPointAddress: EthereumAddress,
-    chainId: Int
+    chainId: Int64
 ) -> Data {
     let array = ABIEncoder.EncodedValue.container(values: [
         try! ABIEncoder.encode(Data32(data: packUo(request: request).web3.keccak256)),

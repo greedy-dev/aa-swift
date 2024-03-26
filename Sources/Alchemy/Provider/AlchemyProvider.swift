@@ -31,32 +31,32 @@ public class AlchemyProvider: SmartAccountProvider {
         return rpcClient
     }
 
-    private var pvgBuffer: Int
-    private var feeOptsSet: Bool
-
     public init(entryPointAddress: EthereumAddress?, config: AlchemyProviderConfig) throws {
         let rpcClient = try AlchemyProvider.createRpcClient(config: config)
-        self.pvgBuffer = config.feeOpts?.preVerificationGasBufferPercent ??
-                         ([
-                            Chain.Arbitrum.id,
-                            Chain.ArbitrumGoerli.id,
-                            Chain.Optimism.id,
-                            Chain.OptimismGoerli.id
-                         ].contains(config.chain.id) ? 5 : 0)
-        self.feeOptsSet = config.feeOpts != nil
-        
         try super.init(client: rpcClient, rpcUrl: nil, entryPointAddress: entryPointAddress, chain: config.chain, opts: config.opts)
-        
-        withAlchemyGasFeeEstimator(baseFeeBufferPercent: BigUInt(config.feeOpts?.baseFeeBufferPercent ?? 50), maxPriorityFeeBufferPercent: BigUInt(config.feeOpts?.maxPriorityFeeBufferPercent ?? 5))
+        withGasEstimator(gasEstimator: alchemyFeeEstimator)
     }
 
-    public override func defaultGasEstimator(operation: inout UserOperationStruct) async throws -> UserOperationStruct {
-        let request = operation.toUserOperationRequest()
-        let estimates = try await rpcClient.estimateUserOperationGas(request: request, entryPoint: getEntryPointAddress().asString())
-
-        operation.preVerificationGas = (estimates.preVerificationGas * BigUInt(100 + self.pvgBuffer)) / BigUInt(100)
-        operation.verificationGasLimit = estimates.verificationGasLimit
-        operation.callGasLimit = estimates.callGasLimit
+    public override func defaultGasEstimator(
+        client: Erc4337Client,
+        operation: inout UserOperationStruct,
+        overrides: UserOperationOverrides
+    ) async throws -> UserOperationStruct {
+        if (overrides.preVerificationGas != nil &&
+            overrides.verificationGasLimit != nil &&
+            overrides.callGasLimit != nil
+        ) {
+            operation.preVerificationGas = overrides.preVerificationGas
+            operation.verificationGasLimit = overrides.verificationGasLimit
+            operation.callGasLimit = overrides.callGasLimit
+        } else {
+            let request = operation.toUserOperationRequest()
+            let estimates = try await rpcClient.estimateUserOperationGas(request: request, entryPoint: getEntryPointAddress().asString())
+            
+            operation.preVerificationGas = overrides.preVerificationGas ?? estimates.preVerificationGas
+            operation.verificationGasLimit = overrides.verificationGasLimit ?? estimates.verificationGasLimit
+            operation.callGasLimit = overrides.callGasLimit ?? estimates.callGasLimit
+        }
 
         return operation
     }
