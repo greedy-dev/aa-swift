@@ -51,4 +51,6 @@ extension Chain {
     public static let Base = Chain(id: 8453, network: "base", name: "Base", currency: Currency(name: "Ether", symbol: "ETH", decimals: 18))
     public static let BaseGoerli = Chain(id: 84531, network: "base-goerli", name: "Base Goerli", currency: Currency(name: "Goerli Ether", symbol: "ETH", decimals: 18))
     public static let BaseSepolia = Chain(id: 84532, network: "base-sepolia", name: "Base Sepolia", currency: Currency(name: "Sepolia Ether", symbol: "ETH", decimals: 18))
+    public static let LineaMainnet = Chain(id: 59144, network: "linea-mainnet", name: "Linea Mainnet", currency: Currency(name: "Ether", symbol: "ETH", decimals: 18))
+    
 }

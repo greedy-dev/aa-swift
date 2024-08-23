@@ -16,7 +16,8 @@ class AlchemyRpcClient: Erc4337RpcClient, AlchemyClient {
             let emptyParams: [Bool] = []
             let data = try await networkProvider.send(method: "rundler_maxPriorityFeePerGas", params: emptyParams, receive: String.self)
             
-            if let feeHex = data as? String, let fee = BigUInt(hex: feeHex) {
+            if let feeHex = data as? String,
+               let fee = BigUInt(hex: feeHex) {
                 return fee
             } else {
                 throw EthereumClientError.unexpectedReturnValue
