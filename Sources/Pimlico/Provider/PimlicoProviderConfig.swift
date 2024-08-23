@@ -12,7 +12,7 @@ public struct PimlicoProviderConfig {
     public let apiKey: String
     public let opts: SmartAccountProviderOpts?
     
-    public init(chain: Chain, connectionConfig: ConnectionConfig, opts: SmartAccountProviderOpts? = nil) {
+    public init(chain: Chain, apiKey: String, opts: SmartAccountProviderOpts? = nil) {
         self.chain = chain
         self.apiKey = apiKey
         self.opts = opts
