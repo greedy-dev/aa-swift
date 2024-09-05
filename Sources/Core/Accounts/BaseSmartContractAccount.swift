@@ -106,7 +106,7 @@ extension BaseSmartContractAccount {
 
                 return address
             default:
-                break;
+                break
             }
         }
         

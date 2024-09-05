@@ -29,7 +29,7 @@ public protocol ISmartContractAccount {
     func signMessage(msg: Data) async throws -> Data
 
     /// If the account is not deployed, it will sign the message and then wrap it in 6492 format
-    func signMessageWith6492(msg: Data) async -> Data
+    func signMessageWith6492(msg: Data) async throws -> Data
 
     /// Returns the address of the account
     mutating func getAddress() async throws -> EthereumAddress

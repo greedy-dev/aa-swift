@@ -47,6 +47,37 @@ public struct UserOperationCallData: Equatable  {
     }
 }
 
+extension UserOperationCallData: ABITuple {
+    public init?(values: [web3.ABIDecoder.DecodedValue]) throws {
+        self.target = try values[0].decoded()
+        self.value = try values[1].decoded()
+        self.data = try values[2].decoded()
+    }
+    
+    public static var rawType: web3.ABIRawType {
+        .Tuple([.FixedAddress, .FixedUInt(256), .DynamicBytes])
+    }
+    
+    
+    
+    public static var types: [any web3.ABIType.Type] {
+        [EthereumAddress.self, BigUInt.self, Data.self]
+    }
+    
+    public var encodableValues: [any web3.ABIType] {
+        let values: [any web3.ABIType] = [self.target, self.value ?? BigUInt(0), self.data]
+        
+        return values
+    }
+    
+    public func encode(to encoder: web3.ABIFunctionEncoder) throws {
+        try encoder.encode(self.target)
+        try encoder.encode(self.value ?? BigUInt(0))
+        try encoder.encode(self.data)
+    }
+}
+
+
 /// Represents the request as it needs to be formatted for RPC requests
 public struct UserOperationRequest: Equatable, Encodable {
     /// The origin of the request
