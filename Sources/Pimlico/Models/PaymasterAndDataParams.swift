@@ -12,13 +12,6 @@ public struct PaymasterAndDataParams: Encodable {
     public var entryPoint: String
     public var sponsorshipPolicyId: SponsorshipPolicyId?
     
-
-    private enum CodingKeys: CodingKey {
-        case userOperation
-        case entryPoint
-        case sponsorshipPolicyId
-    }
-
     public init(
         userOperation: UserOperationRequest,
         entryPoint: String,
@@ -28,6 +21,15 @@ public struct PaymasterAndDataParams: Encodable {
         self.entryPoint = entryPoint
         if let sponsorshipPolicyId {
             self.sponsorshipPolicyId = SponsorshipPolicyId(sponsorshipPolicyId)
+        }
+    }
+    
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(userOperation)
+        try container.encode(entryPoint)
+        if let sponsorshipPolicyId {
+            try container.encode(sponsorshipPolicyId)
         }
     }
 }

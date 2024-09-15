@@ -10,9 +10,9 @@ import BigInt
 import AASwift
 
 public struct PimlicoGasManagerConfig {
-    public let policyId: String
+    public let policyId: String?
     
-    public init(policyId: String) {
+    public init(policyId: String? = nil) {
         self.policyId = policyId
     }
 }
@@ -34,22 +34,15 @@ public struct PimicoGasEstimationOptions {
 }
 
 extension PimlicoProvider {
-    /// This middleware wraps the Alchemy Gas Manager APIs to provide more flexible UserOperation gas sponsorship.
-    ///
-    /// If `estimateGas` is true, it will use `alchemy_requestGasAndPaymasterAndData` to get all of the gas estimates + paymaster data
-    /// in one RPC call.
-    ///
-    /// Otherwise, it will use `alchemy_requestPaymasterAndData` to get only paymaster data, allowing you
-    /// to customize the gas and fee estimation middleware.
+    /// This middleware wraps the Pimlico paymaster APIs to provide more flexible UserOperation gas sponsorship.
     ///
     /// - parameters:
-    ///   - self - the smart account provider to override to use the alchemy gas manager
-    ///   - config - the alchemy gas manager configuration
+    ///   - config - the pimlico gas manager configuration
     ///   - gasEstimationOptions - options to customize gas estimation middleware
     /// - returns: the provider augmented to use the pimlico gas manager
     @discardableResult
     public func withPimlicoGasManager(
-        config: PimlicoGasManagerConfig,
+        config: PimlicoGasManagerConfig = PimlicoGasManagerConfig(),
         gasEstimationOptions: PimicoGasEstimationOptions? = nil
     ) -> Self {
         let fallbackFeeDataGetter = gasEstimationOptions?.fallbackFeeDataGetter ?? pimlicoFeeEstimator
@@ -103,14 +96,13 @@ extension PimlicoProvider {
     }
 }
 
-/// This uses the alchemy RPC method: `alchemy_requestPaymasterAndData`, which does not estimate gas. It's recommended to use
-/// this middleware if you want more customization over the gas and fee estimation middleware, including setting
-/// non-default buffer values for the fee/gas estimation.
-///
 /// - parameter provider: the smart account provider to override to use the paymaster middleware
 /// - parameter config: the alchemy gas manager configuration
 /// - returns: the provider augmented to use the paymaster middleware
-func requestPaymasterAndData(provider: PimlicoProvider, config: PimlicoGasManagerConfig) -> PimlicoProvider {
+func requestPaymasterAndData(
+    provider: PimlicoProvider,
+    config: PimlicoGasManagerConfig
+) -> PimlicoProvider {
     provider.withPaymasterMiddleware(
         dummyPaymasterDataMiddleware: { _, uoStruct, _ in
             uoStruct.paymasterAndData = dummyPaymasterAndData(chainId: provider.chain.id)
@@ -132,14 +124,17 @@ func requestPaymasterAndData(provider: PimlicoProvider, config: PimlicoGasManage
 }
 
 
-/// This uses the alchemy RPC method: `alchemy_requestGasAndPaymasterAndData` to get all of the gas estimates + paymaster data
+/// This uses the alchemy RPC method to get all of the gas estimates + paymaster data
 /// in one RPC call. It will no-op the gas estimator and fee data getter middleware and set a custom middleware that makes the RPC call.
 ///
 /// - Parameters:
 ///   - provider: the smart account provider to override to use the paymaster middleware
 ///   - config: the alchemy gas manager configuration
 /// - Returns: the provider augmented to use the paymaster middleware
-func requestGasAndPaymasterData(provider: PimlicoProvider, config: PimlicoGasManagerConfig) -> PimlicoProvider {
+func requestGasAndPaymasterData(
+    provider: PimlicoProvider,
+    config: PimlicoGasManagerConfig
+) -> PimlicoProvider {
     provider
         .withPaymasterMiddleware(
         dummyPaymasterDataMiddleware: { _, uoStruct, _ in

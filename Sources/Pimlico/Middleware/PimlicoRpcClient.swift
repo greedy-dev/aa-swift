@@ -52,7 +52,7 @@ class PimlicoRpcClient: Erc4337RpcClient, PimlicoClient {
     
     public func requestGasAndPaymasterAndData(params: PaymasterAndDataParams) async throws -> PimlicoGasAndPaymasterAndData {
         do {
-            let data = try await networkProvider.send(method: "pm_sponsorUserOperation", params: [params], receive: PimlicoGasAndPaymasterAndData.self)
+            let data = try await networkProvider.send(method: "pm_sponsorUserOperation", params: params, receive: PimlicoGasAndPaymasterAndData.self)
             if let result = data as? PimlicoGasAndPaymasterAndData {
                 return result
             } else {
